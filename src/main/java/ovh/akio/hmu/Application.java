@@ -41,14 +41,14 @@ import java.util.zip.ZipInputStream;
 )
 public class Application implements Callable<Integer> {
 
-    private static final File WORKSPACE           = new File(".", "workspace");
-    private static final File EXTRACT_PCK_WEM_OUT = new File(WORKSPACE, "out\\wem");
-    private static final File EXTRACT_WEM_WAV_OUT = new File(WORKSPACE, "out\\wav");
-    private static final File UPDATE_PCK_SRC_OUT  = new File(WORKSPACE, "update\\pck");
-    private static final File UPDATE_PCK_WEM_OUT  = new File(WORKSPACE, "update\\wem");
-    private static final File UPDATE_WEM_WAV_OUT  = new File(WORKSPACE, "update\\wav");
-    private static final File UPDATE_DIFF_OUT     = new File(WORKSPACE, "update\\patched");
-    private static final File UPDATE_DIFF_SRC     = new File(WORKSPACE, "update\\diff");
+    private static File WORKSPACE           = new File(".", "workspace");
+    private static File EXTRACT_PCK_WEM_OUT = new File(WORKSPACE, "out\\wem");
+    private static File EXTRACT_WEM_WAV_OUT = new File(WORKSPACE, "out\\wav");
+    private static File UPDATE_PCK_SRC_OUT  = new File(WORKSPACE, "update\\pck");
+    private static File UPDATE_PCK_WEM_OUT  = new File(WORKSPACE, "update\\wem");
+    private static File UPDATE_WEM_WAV_OUT  = new File(WORKSPACE, "update\\wav");
+    private static File UPDATE_DIFF_OUT     = new File(WORKSPACE, "update\\patched");
+    private static File UPDATE_DIFF_SRC     = new File(WORKSPACE, "update\\diff");
 
     @CommandLine.Option(
             names = {"-g", "--game"},
@@ -56,6 +56,13 @@ public class Application implements Callable<Integer> {
             required = true
     )
     private File gameFolder;
+
+    @CommandLine.Option(
+            names = {"-o", "--output"},
+            description = "Output folder for the extracted files",
+            defaultValue = ""
+    )
+    private File outputFolder;
 
     @CommandLine.Option(
             names = {"-d", "--diff"},
@@ -108,6 +115,10 @@ public class Application implements Callable<Integer> {
      */
     @Override
     public Integer call() throws Exception {
+        // Set the output directory
+        if (!this.outputFolder.getName().equals("")) {
+            updateOutput(outputFolder);
+        }
 
         if (WORKSPACE.exists()) {
             Utils.delete(WORKSPACE);
@@ -303,4 +314,18 @@ public class Application implements Callable<Integer> {
         }
     }
 
+    /**
+     * Updates the output with the path the user specified
+     * @param file
+     */
+    private static void updateOutput(File file) {
+        WORKSPACE           = new File(file, "workspace");
+        EXTRACT_PCK_WEM_OUT = new File(WORKSPACE, "out\\wem");
+        EXTRACT_WEM_WAV_OUT = new File(WORKSPACE, "out\\wav");
+        UPDATE_PCK_SRC_OUT  = new File(WORKSPACE, "update\\pck");
+        UPDATE_PCK_WEM_OUT  = new File(WORKSPACE, "update\\wem");
+        UPDATE_WEM_WAV_OUT  = new File(WORKSPACE, "update\\wav");
+        UPDATE_DIFF_OUT     = new File(WORKSPACE, "update\\patched");
+        UPDATE_DIFF_SRC     = new File(WORKSPACE, "update\\diff");
+    }
 }
